@@ -28,9 +28,10 @@ weigths = var_inv.dot(covar)
 print("calculating y_test...")
 y_test = x_test.dot(weigths)
 y_test = y_test.transpose()
-print(y_test)
 
-
+result = np.vstack((test_data[1:2001,0],y_test))
+result = result.transpose()
+np.savetxt("result.csv", result, delimiter=",")
 
 
 
