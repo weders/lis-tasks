@@ -3,6 +3,17 @@ import sklearn
 from numpy import genfromtxt
 from sklearn.metrics import mean_squared_error
 
+######################################################
+# Preferences
+######################################################
+
+leastsquares = True
+gradientdescent = False
+
+
+######################################################
+# Loading Data
+######################################################
 
 
 #load data from csv file to np.array 
@@ -18,6 +29,11 @@ x_train = train_data[1:10000,2:12]
 y_train = train_data[1:10000,1]
 x_validate = train_data[5000:10000,2:12]
 y_validate = train_data[5000:10000,1]
+
+
+######################################################
+# Least Squares Implementation
+######################################################
 
 #compute variance and covariance
 print("computing variance matrix and covariance matrix...") 
@@ -38,6 +54,21 @@ prediction = prediction.transpose()
 print("calculate RMSE..")
 RMSE = mean_squared_error(y_validate, prediction)**0.5
 print("RMSE:{0:0.15f}".format(RMSE))
+
+
+######################################################
+# Gradient Descent Implementation
+######################################################
+
+
+
+
+
+
+
+######################################################
+# Result Output
+######################################################
 
 #predict test data and store into result.csv
 pred_test = x_test.dot(weigths)
