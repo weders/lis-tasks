@@ -2,6 +2,7 @@ import numpy as np
 import sklearn 
 from numpy import genfromtxt
 from sklearn.metrics import mean_squared_error
+from sklearn import linear_model
 
 ######################################################
 # Preferences
@@ -110,7 +111,10 @@ if gradientdescent:
 
 if ridgeregression:
 
-    l = 1
+    print(x_train.shape)
+
+
+    l = 0.1
 
     Id = np.identity(x_train.shape[1])
 
@@ -143,12 +147,88 @@ if ridgeregression:
     print("RMSE:{0:0.15f}".format(RMSE))
 
 
+
+######################################################
+# SKLEARN Implementation
+######################################################
+
+reg = linear_model.Ridge(alpha=0.0000005)
+reg.fit(x_train,y_train)
+
+prediction = reg.predict(x_validate)
+
+y_validate = np.reshape(y_validate,(5000,1))
+prediction = np.reshape(prediction,(5000,1))
+
+
+print("calculate RMSE..")
+RMSE = mean_squared_error(y_validate, prediction) ** 0.5
+print("RMSE:{0:0.15f}".format(RMSE))
+
+
+
+reg = linear_model.LinearRegression(fit_intercept=True)
+reg.fit(x_train,y_train)
+
+prediction = reg.predict(x_validate)
+
+y_validate = np.reshape(y_validate,(5000,1))
+prediction = np.reshape(prediction,(5000,1))
+
+
+print("calculate RMSE..")
+RMSE = mean_squared_error(y_validate, prediction) ** 0.5
+print("RMSE:{0:0.15f}".format(RMSE))
+
+reg = linear_model.Lasso(alpha=0.001)
+reg.fit(x_train,y_train)
+
+prediction = reg.predict(x_validate)
+
+_validate = np.reshape(y_validate,(5000,1))
+prediction = np.reshape(prediction,(5000,1))
+
+
+print("calculate RMSE..")
+RMSE = mean_squared_error(y_validate, prediction) ** 0.5
+print("RMSE:{0:0.15f}".format(RMSE))
+
+
+reg = linear_model.ElasticNet(alpha=0.00001)
+reg.fit(x_train,y_train)
+
+prediction = reg.predict(x_validate)
+
+_validate = np.reshape(y_validate,(5000,1))
+prediction = np.reshape(prediction,(5000,1))
+
+
+print("calculate RMSE..")
+RMSE = mean_squared_error(y_validate, prediction) ** 0.5
+print("RMSE:{0:0.15f}".format(RMSE))
+
+reg = linear_model.Lars(fit_intercept=True)
+reg.fit(x_train,y_train)
+
+prediction = reg.predict(x_validate)
+
+_validate = np.reshape(y_validate,(5000,1))
+prediction = np.reshape(prediction,(5000,1))
+
+
+print("calculate RMSE..")
+RMSE = mean_squared_error(y_validate, prediction) ** 0.5
+print("RMSE:{0:0.15f}".format(RMSE))
+
+
+pred_test = reg.predict(x_test)
+
 ######################################################
 # Result Output
 ######################################################
 
 #predict test data and store into result.csv
-pred_test = x_test.dot(weights)
+#pred_test = x_test.dot(weights)
 pred_test = pred_test.transpose()
 pred_test = pred_test.reshape((-1,1))
 test_data = test_data[1:2001,0]
