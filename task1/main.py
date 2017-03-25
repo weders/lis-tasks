@@ -59,11 +59,15 @@ def error_calculation(y_pred,y):
 ##########################################
 
 LLS = False # Linear Least Squares (order 1)
-LLS_order = True # Linear Least Squares (order 2)
-order = 2 # order of linear least squares
+LLS_order = False # Linear Least Squares (order 2)
+order_LLS = 2 # order of linear least squares
 
 
+ridgeClosedForm = False
+ridgeClosedForm_order = False
+order_ridge = 2
 
+ridgeGradientDescent = True
 
 ##########################################
 # Linear Least Squares
@@ -80,7 +84,7 @@ if LLS:
 if LLS_order:
 
     i = 2
-    while i <= order:
+    while i <= order_LLS:
         x_train = np.hstack((x_train,x_train**i))
         x_validation = np.hstack((x_validation,x_validation**i))
         i += 1
@@ -92,6 +96,71 @@ if LLS_order:
 
     y_pred = x_validation.dot(weights) # prediction for validation set
     error_calculation(y_pred, y_validation) # error calculation for validation
+
+
+##########################################
+# Ridge Regression Closed Form
+##########################################
+
+if ridgeClosedForm:
+
+    mu = 10 # norm regularizer
+
+    covariance = x_train.T.dot(x_train) + mu*np.identity(x_train.shape[1])
+    weights = np.linalg.inv(covariance).dot(x_train.T.dot(y_train))
+
+    y_pred = x_validation.dot(weights)  # prediction for validation set
+    error_calculation(y_pred, y_validation)  # error calculation for validation
+
+
+if ridgeClosedForm_order:
+
+    mu = 175 # norm regularizer
+
+    i = 2
+    while i <= order_ridge:
+        x_train = np.hstack((x_train, x_train ** i))
+        x_validation = np.hstack((x_validation, x_validation ** i))
+        i += 1
+
+    covariance = x_train.T.dot(x_train) + mu*np.identity(x_train.shape[1])
+    weights = np.linalg.inv(covariance).dot(x_train.T.dot(y_train))
+
+    y_pred = x_validation.dot(weights)  # prediction for validation set
+    error_calculation(y_pred, y_validation)  # error calculation for validation
+
+
+##########################################
+# Ridge Regression Gradient Descent
+##########################################
+
+if ridgeGradientDescent:
+    eta = 0.001
+    mu = 0.001
+    n = x_train.shape[0]
+
+    weights = np.ones((15, 1))  # initialization of weight vector
+
+    covariance = x_train.T.dot(x_train)
+    eigVals, eigVecs = np.linalg.eigh(covariance)
+
+    l_max = eigVals[-1]
+    l_min = eigVals[0]
+
+    kappa = l_max / l_min
+
+    NUMBER_OF_ITERATIONS = 10000
+    print('Number of Iterations in Gradient Descent: ', NUMBER_OF_ITERATIONS)
+    i = 1
+
+
+    while i < NUMBER_OF_ITERATIONS:
+        weights = (1 - eta * mu) * weights - eta / n * (covariance.dot(weights) - np.reshape(x_train.T.dot(y_train),weights.shape))
+        i += 1
+        print(i)
+
+    y_pred = x_validation.dot(weights)  # prediction for validation set
+    error_calculation(y_pred, y_validation)  # error calculation for validation
 
 
 
