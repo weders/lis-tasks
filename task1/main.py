@@ -2,6 +2,17 @@ import numpy as np
 import pandas
 from sklearn.metrics import mean_squared_error
 
+# sklearn algorithms
+from sklearn.linear_model import (
+    LinearRegression, TheilSenRegressor, RANSACRegressor, HuberRegressor)
+
+from sklearn import linear_model
+from sklearn.svm import SVR,NuSVR
+from sklearn.kernel_ridge import KernelRidge
+from sklearn.tree import DecisionTreeRegressor
+
+
+
 
 ##########################################
 # Loading Data
@@ -26,6 +37,8 @@ test_data_x = test_data[:,1:]
 test_data_Id = test_data_Id.astype(int)
 test_data_Id = test_data_Id.T
 
+shapeTestData = (2000,1)
+
 
 ##########################################
 # Split Training Data
@@ -33,7 +46,7 @@ test_data_Id = test_data_Id.T
 
 fraction = 2 # enter fraction number for training data split
 
-SIZE_OF_TRAINING_SET = int(training_data.shape[0]/fraction)
+SIZE_OF_TRAINING_SET = 899
 
 x_train = x_training[:SIZE_OF_TRAINING_SET,:]
 y_train = y_training[:SIZE_OF_TRAINING_SET]
@@ -67,7 +80,8 @@ ridgeClosedForm = False
 ridgeClosedForm_order = False
 order_ridge = 2
 
-ridgeGradientDescent = True
+ridgeGradientDescent = False
+skl = True
 
 ##########################################
 # Linear Least Squares
@@ -164,3 +178,75 @@ if ridgeGradientDescent:
 
 
 
+##########################################
+# sklearn regression methods
+##########################################
+
+
+if skl:
+    estimator1 = SVR(kernel='rbf', C=1e4, gamma=0.01)
+    estimator1.fit(x_train,y_train)
+    y_predict1 = estimator1.predict(x_validation)
+
+    error_calculation(y_predict1,y_validation)
+
+    y_test1 = estimator1.predict(test_data_x)
+
+
+    estimator2 = SVR(kernel='poly',C=1e3, degree=2)
+    estimator2.fit(x_train, y_train)
+    y_predict2 = estimator2.predict(x_validation)
+
+    error_calculation(y_predict2, y_validation)
+
+    y_test2 = estimator2.predict(test_data_x)
+
+    estimator3 = KernelRidge(alpha=1.0)
+    estimator3.fit(x_train,y_train)
+    y_predict3 = estimator3.predict(x_validation)
+
+    error_calculation(y_predict3,y_validation)
+
+    y_test3 = estimator3.predict(test_data_x)
+
+    estimator4 = NuSVR(C=1e4,nu=0.1,kernel='rbf',gamma=0.01)
+    estimator4.fit(x_train,y_train)
+    y_predict4 = estimator4.predict(x_validation)
+
+    error_calculation(y_predict4,y_validation)
+
+    y_test4 = estimator1.predict(test_data_x)
+
+    estimator5 = DecisionTreeRegressor(criterion='mse',splitter='random')
+    estimator5.fit(x_train,y_train)
+    y_predict5 = estimator4.predict(x_validation)
+
+    error_calculation(y_predict5,y_validation)
+
+    y_test5 = estimator1.predict(test_data_x)
+
+
+
+
+##########################################
+# Result Output
+##########################################
+
+y_test1 = np.reshape(y_test1,shapeTestData)
+y_test2 = np.reshape(y_test2,shapeTestData)
+y_test3 = np.reshape(y_test3,shapeTestData)
+
+test_data_Id = np.reshape(test_data_Id,shapeTestData)
+
+output1 = np.hstack((test_data_Id,y_test1))
+output2 = np.hstack((test_data_Id,y_test2))
+output3 = np.hstack((test_data_Id,y_test3))
+
+
+test1 = pandas.DataFrame(data=output1)
+test2 = pandas.DataFrame(data=output2)
+test3 = pandas.DataFrame(data=output3)
+
+#test1.to_csv('result_test1.csv',header=['Id','y'],index=False)
+#test2.to_csv('result_test2.csv',header=['Id','y'],index=False)
+#test3.to_csv('result_test3.csv',header=['Id','y'],index=False)
