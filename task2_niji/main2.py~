@@ -29,19 +29,38 @@ training_data = training_data.as_matrix()
 test_data = test_data.as_matrix()
 
 y_training = training_data[:,1]
-#x_training = training_data[:,2:]
-x_train1 = training_data[:,2:8]
-x_train2 = training_data[:,11:14]
-x_train3 =training_data[:,16:]
-x_training =np.hstack((x_train1,x_train2,x_train3))
-x_training = preprocessing.scale(x_training)
-test_data_Id = test_data[:,0]
-#test_data_x = test_data[:,1:]
-test1 = test_data[:,1:7]
-test2 = test_data[:,10:13]
-test3 = test_data[:,15:]
-test_data_x  =np.hstack((test1, test2, test3))
-test_data_x = preprocessing.scale(test_data_x)
+a=False
+b=True
+if(a):
+	#x_training = training_data[:,2:]
+	x_train1 = training_data[:,2:8]
+	x_train2 = training_data[:,11:] #14
+	#x_train3 =training_data[:,16:]
+	x_training =np.hstack((x_train1,x_train2))
+	x_training = preprocessing.scale(x_training)
+	test_data_Id = test_data[:,0]
+	#test_data_x = test_data[:,1:]
+	test1 = test_data[:,1:7]
+	test2 = test_data[:,10:] #13
+	#test3 = test_data[:,15:]
+	test_data_x  =np.hstack((test1, test2))
+	test_data_x = preprocessing.scale(test_data_x)
+
+if(b):
+	x_training = training_data[:,2:]
+	x_training = preprocessing.scale(x_training)
+	#x_train1 = x_training[:,0:6]
+	#x_train2 = x_training[:,9:12]
+	#x_train3 =  x_training[:,14:]
+	#x_training =np.hstack((x_train1,x_train2,x_train3))
+	test_data_Id = test_data[:,0]
+	test_data_x = test_data[:,1:]
+	test_data_x = preprocessing.scale(test_data_x)
+	#test1 = test_data_x[:,0:6]
+	#test2 = test_data_x[:,9:12]
+	#test3 = test_data_x[:,14:]
+	#test_data_x  =np.hstack((test1, test2, test3))
+
 test_data_Id = test_data_Id.astype(int)
 test_data_Id = test_data_Id.T
 
@@ -66,13 +85,13 @@ def error_calculation(y_pred,y):
 ##########################################
 # MLPClassifier
 ##########################################
-mlpc=MLPClassifier(hidden_layer_sizes=[100,50,25],alpha=3)
+mlpc=MLPClassifier(hidden_layer_sizes=[100,50,10],alpha=3)
 
 
-alphas = np.linspace(2, 3, 2)
+alphas = np.linspace(2, 4, 3)
 scores = list()
 scores_std = list()
-a=True
+a=False
 if(a):
 	n_folds = 20
     	for alpha in alphas:
@@ -104,7 +123,7 @@ mlpc.fit(x_training,y_training)
 y_test10=mlpc.predict(test_data_x)
 
 #plot = pandas.DataFrame(data=x_training)
-#plt.matshow(plot.corr())
+#plt.matshow(plot.cov())
 #plt.show()
 ##########################################
 # Result Output
