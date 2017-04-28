@@ -1,5 +1,6 @@
 import numpy as np
 import pandas
+import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 
 # sklearn algorithms
@@ -8,8 +9,10 @@ from sklearn.linear_model import (
 
 from sklearn import linear_model
 from sklearn.svm import SVR,NuSVR
-from sklearn.kernel_ridge import KernelRidge
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import ExpSineSquared,WhiteKernel
+from sklearn.kernel_ridge import KernelRidge
 
 
 
@@ -48,6 +51,34 @@ fraction = 2 # enter fraction number for training data split
 
 SIZE_OF_TRAINING_SET = 899
 
+x_train = np.zeros((SIZE_OF_TRAINING_SET,x_training.shape[1]))
+y_train = np.zeros((SIZE_OF_TRAINING_SET,1))
+
+'''
+i = 0
+j = 0
+
+
+while i < 2*SIZE_OF_TRAINING_SET:
+    x_train[j] = x_training[i,:]
+    y_train[j] = y_training[i]
+    j += 1
+    i += 2
+
+x_validation = np.zeros((SIZE_OF_TRAINING_SET,x_training.shape[1]))
+y_validation = np.zeros((SIZE_OF_TRAINING_SET,1))
+
+
+i = 1
+j = 0
+
+while i < 2*SIZE_OF_TRAINING_SET:
+    x_validation[j] = x_training[i,:]
+    y_validation[j] = y_training[i]
+    j += 1
+    i += 2
+'''
+
 x_train = x_training[:SIZE_OF_TRAINING_SET,:]
 y_train = y_training[:SIZE_OF_TRAINING_SET]
 
@@ -63,6 +94,13 @@ def error_calculation(y_pred,y):
     RMSE = mean_squared_error(y,y_pred) ** 0.5
     print(RMSE)
     return
+
+def plot_data(y):
+    plt.plot(y)
+    plt.show()
+    plt.close()
+    return
+
 
 
 
@@ -184,7 +222,9 @@ if ridgeGradientDescent:
 
 
 if skl:
-    estimator1 = SVR(kernel='rbf', C=1e4, gamma=0.01)
+    '''
+
+    estimator1 = SVR(kernel='poly',degree=3, C=1e4,coef0=0.1,epsilon=0.010)
     estimator1.fit(x_train,y_train)
     y_predict1 = estimator1.predict(x_validation)
 
@@ -226,27 +266,43 @@ if skl:
     y_test5 = estimator1.predict(test_data_x)
 
 
+    '''
+
+    estimator6 = KernelRidge(alpha=2.0, kernel='polynomial', gamma=None, degree=11 , coef0=0.8, kernel_params=None)
+    estimator6.fit(x_train,y_train)
+    y_predict6 = estimator6.predict(x_validation)
+
+    error_calculation(y_predict6,y_validation)
+
+    y_test6 = estimator6.predict(test_data_x)
+
+
 
 
 ##########################################
 # Result Output
 ##########################################
 
-y_test1 = np.reshape(y_test1,shapeTestData)
-y_test2 = np.reshape(y_test2,shapeTestData)
-y_test3 = np.reshape(y_test3,shapeTestData)
+#y_test1 = np.reshape(y_test1,shapeTestData)
+#y_test2 = np.reshape(y_test2,shapeTestData)
+#y_test3 = np.reshape(y_test3,shapeTestData)
+y_test6 = np.reshape(y_test6,shapeTestData)
 
 test_data_Id = np.reshape(test_data_Id,shapeTestData)
 
-output1 = np.hstack((test_data_Id,y_test1))
-output2 = np.hstack((test_data_Id,y_test2))
-output3 = np.hstack((test_data_Id,y_test3))
+#output1 = np.hstack((test_data_Id,y_test1))
+#output2 = np.hstack((test_data_Id,y_test2))
+#output3 = np.hstack((test_data_Id,y_test3))
+output6 = np.hstack((test_data_Id,y_test6))
 
 
-test1 = pandas.DataFrame(data=output1)
-test2 = pandas.DataFrame(data=output2)
-test3 = pandas.DataFrame(data=output3)
+
+#test1 = pandas.DataFrame(data=output1)
+#test2 = pandas.DataFrame(data=output2)
+#test3 = pandas.DataFrame(data=output3)
+test6 = pandas.DataFrame(data=output6)
 
 #test1.to_csv('result_test1.csv',header=['Id','y'],index=False)
 #test2.to_csv('result_test2.csv',header=['Id','y'],index=False)
 #test3.to_csv('result_test3.csv',header=['Id','y'],index=False)
+test6.to_csv('result_test6.csv',header=['Id','y'],index=False)
