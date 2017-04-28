@@ -1,6 +1,10 @@
 import numpy as np
+<<<<<<< HEAD
 import pandas
 import matplotlib.pyplot as plt
+=======
+import pandas as pd
+>>>>>>> origin/master
 from sklearn.metrics import mean_squared_error
 
 # sklearn algorithms
@@ -24,8 +28,8 @@ from sklearn.kernel_ridge import KernelRidge
 PATH_TO_TRAINING_DATA = 'data/train.csv'
 PATH_TO_TEST_DATA = 'data/test.csv'
 
-training_data = pandas.read_csv(PATH_TO_TRAINING_DATA,sep=',')
-test_data = pandas.read_csv(PATH_TO_TEST_DATA,sep=',')
+training_data = pd.read_csv(PATH_TO_TRAINING_DATA,sep=',')
+test_data = pd.read_csv(PATH_TO_TEST_DATA,sep=',')
 
 
 training_data = training_data.as_matrix()
@@ -109,7 +113,7 @@ def plot_data(y):
 # Preferences
 ##########################################
 
-LLS = False # Linear Least Squares (order 1)
+LLS = True # Linear Least Squares (order 1)
 LLS_order = False # Linear Least Squares (order 2)
 order_LLS = 2 # order of linear least squares
 
@@ -220,11 +224,18 @@ if ridgeGradientDescent:
 # sklearn regression methods
 ##########################################
 
+def my_kernel(X, Y):
+        K = np.dot(X,X.T)
+        return K
 
 if skl:
+<<<<<<< HEAD
     '''
 
     estimator1 = SVR(kernel='poly',degree=3, C=1e4,coef0=0.1,epsilon=0.010)
+=======
+    estimator1 = SVR(kernel=my_kernel)
+>>>>>>> origin/master
     estimator1.fit(x_train,y_train)
     y_predict1 = estimator1.predict(x_validation)
 
@@ -233,37 +244,6 @@ if skl:
     y_test1 = estimator1.predict(test_data_x)
 
 
-    estimator2 = SVR(kernel='poly',C=1e3, degree=2)
-    estimator2.fit(x_train, y_train)
-    y_predict2 = estimator2.predict(x_validation)
-
-    error_calculation(y_predict2, y_validation)
-
-    y_test2 = estimator2.predict(test_data_x)
-
-    estimator3 = KernelRidge(alpha=1.0)
-    estimator3.fit(x_train,y_train)
-    y_predict3 = estimator3.predict(x_validation)
-
-    error_calculation(y_predict3,y_validation)
-
-    y_test3 = estimator3.predict(test_data_x)
-
-    estimator4 = NuSVR(C=1e4,nu=0.1,kernel='rbf',gamma=0.01)
-    estimator4.fit(x_train,y_train)
-    y_predict4 = estimator4.predict(x_validation)
-
-    error_calculation(y_predict4,y_validation)
-
-    y_test4 = estimator1.predict(test_data_x)
-
-    estimator5 = DecisionTreeRegressor(criterion='mse',splitter='random')
-    estimator5.fit(x_train,y_train)
-    y_predict5 = estimator4.predict(x_validation)
-
-    error_calculation(y_predict5,y_validation)
-
-    y_test5 = estimator1.predict(test_data_x)
 
 
     '''
@@ -283,6 +263,7 @@ if skl:
 # Result Output
 ##########################################
 
+<<<<<<< HEAD
 #y_test1 = np.reshape(y_test1,shapeTestData)
 #y_test2 = np.reshape(y_test2,shapeTestData)
 #y_test3 = np.reshape(y_test3,shapeTestData)
@@ -301,6 +282,18 @@ output6 = np.hstack((test_data_Id,y_test6))
 #test2 = pandas.DataFrame(data=output2)
 #test3 = pandas.DataFrame(data=output3)
 test6 = pandas.DataFrame(data=output6)
+=======
+y_test1 = np.reshape(y_test1,shapeTestData)
+
+test_data_Id = np.reshape(test_data_Id,shapeTestData)
+
+output1 = np.hstack((test_data_Id,y_test1))
+
+
+
+test1 = pd.DataFrame(data=output1)
+
+>>>>>>> origin/master
 
 #test1.to_csv('result_test1.csv',header=['Id','y'],index=False)
 #test2.to_csv('result_test2.csv',header=['Id','y'],index=False)
