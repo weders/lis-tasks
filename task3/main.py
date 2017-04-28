@@ -53,5 +53,7 @@ hl_sizes = [50,100,100,100,50]
 network = NN.NeuralNetwork(training_data,validation_data, 5, 5,hl_sizes)
 network.train_neural_network()
 
+network.prediction(data_test)
+
 
 

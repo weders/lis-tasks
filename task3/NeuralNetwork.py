@@ -9,7 +9,7 @@ class NeuralNetwork:
 
 
 
-    def __init__(self, training_data, validation_data, n_classes, n_hl, hl_sizes=None, activation_functions=None, batch_size=None , n_epochs=None):
+    def __init__(self, training_data, validation_data, n_classes, n_hl, hl_sizes=None, activation_functions=None, batch_size=None , n_epochs=None, logging=False):
 
         self.validation_data = validation_data
         self.training_data = training_data
@@ -101,6 +101,7 @@ class NeuralNetwork:
         #############################################################
 
         self.LOG_DIR = 'logs/'
+        self.logging = logging
 
 
 
@@ -119,18 +120,21 @@ class NeuralNetwork:
 
             if layer_number == 0:
                 computation = tf.add(tf.matmul(data, layers[layer_number]['weights']), layers[layer_number]['biases'])
-                if self.activation_functions == None or self.activation_functions[layer_number] == 'relu':
+                if self.activation_functions == None:
                     computation = tf.nn.relu(computation)
-                if self.activation_functions[layer_number] == 'sigmoid':
-                    computation = tf.nn.sigmoid(computation)
-                if self.activation_functions[layer_number] == 'tanh':
-                    computation = tf.nn.tanh(computation)
-                if self.activation_functions[layer_number] == 'elu':
-                    computation = tf.nn.elu(computation)
-                if self.activation_functions[layer_number] == 'softplus':
-                    computation = tf.nn.softplus(computation)
-                if self.activation_functions[layer_number] == 'softsign':
-                    computation = tf.nn.softsign(computation)
+                else:
+                    if self.activation_functions[layer_number] == 'relu':
+                        computation = tf.nn.relu(computation)
+                    if self.activation_functions[layer_number] == 'sigmoid':
+                        computation = tf.nn.sigmoid(computation)
+                    if self.activation_functions[layer_number] == 'tanh':
+                        computation = tf.nn.tanh(computation)
+                    if self.activation_functions[layer_number] == 'elu':
+                        computation = tf.nn.elu(computation)
+                    if self.activation_functions[layer_number] == 'softplus':
+                        computation = tf.nn.softplus(computation)
+                    if self.activation_functions[layer_number] == 'softsign':
+                        computation = tf.nn.softsign(computation)
 
 
 
@@ -138,18 +142,21 @@ class NeuralNetwork:
             if layer_number is not self.n_l - 1 and layer_number is not 0:
                 computation = tf.add(tf.matmul(layer_computation[layer_number - 1], layers[layer_number]['weights']),
                                      layers[layer_number]['biases'])
-                if self.activation_functions == None or self.activation_functions[layer_number] == 'relu':
+                if self.activation_functions == None:
                     computation = tf.nn.relu(computation)
-                if self.activation_functions[layer_number] == 'sigmoid':
-                    computation = tf.nn.sigmoid(computation)
-                if self.activation_functions[layer_number] == 'tanh':
-                    computation = tf.nn.tanh(computation)
-                if self.activation_functions[layer_number] == 'elu':
-                    computation = tf.nn.elu(computation)
-                if self.activation_functions[layer_number] == 'softplus':
-                    computation = tf.nn.softplus(computation)
-                if self.activation_functions[layer_number] == 'softsign':
-                    computation = tf.nn.softsign(computation)
+                else:
+                    if self.activation_functions[layer_number] == 'relu':
+                        computation = tf.nn.relu(computation)
+                    if self.activation_functions[layer_number] == 'sigmoid':
+                        computation = tf.nn.sigmoid(computation)
+                    if self.activation_functions[layer_number] == 'tanh':
+                        computation = tf.nn.tanh(computation)
+                    if self.activation_functions[layer_number] == 'elu':
+                        computation = tf.nn.elu(computation)
+                    if self.activation_functions[layer_number] == 'softplus':
+                        computation = tf.nn.softplus(computation)
+                    if self.activation_functions[layer_number] == 'softsign':
+                        computation = tf.nn.softsign(computation)
 
             if layer_number == self.n_l - 2:
                 computation = tf.add(tf.matmul(layer_computation[layer_number - 1], layers[layer_number]['weights']),
@@ -189,12 +196,18 @@ class NeuralNetwork:
 
             print('Accuracy:', accuracy.eval({self.x_variable: self.x_validation, self.y_variable: self.y_validation}))
 
-            writer = tf.summary.FileWriter(self.LOG_DIR)
-            writer.add_graph(sess.graph)
+            if self.logging:
+                writer = tf.summary.FileWriter(self.LOG_DIR)
+                writer.add_graph(sess.graph)
 
         return
 
     def prediction(self,prediction_data):
+        prediction = self.neural_network_model(prediction_data)
+
+        print(prediction)
+
+        return
 
 
 
