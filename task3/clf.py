@@ -2,15 +2,18 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 from sklearn import preprocessing
+
+
 #################################################
 # load train data and test data
 train = pd.read_hdf("train.h5", "train")
 final = pd.read_hdf("test.h5", "test")
 features = list(train)[1:]
 data_final = final[features]
+
 #################################################
 # split into train and validate data
-size_of_train = 40000
+size_of_train = 42000
 # train data
 data_train = train[0:size_of_train]
 targets_train = data_train['y']
@@ -19,19 +22,21 @@ features_train = data_train[features]
 data_test = train[size_of_train:]
 targets_test = data_test['y']
 targets_test = pd.get_dummies(targets_test)
-features_test = np.array(data_test[features].values).tolist()
+features_test = data_test[features]
 features_test = preprocessing.scale(features_test)
 
 
 ##################################################
 # tensorflow
 # defining our model
-n_nodes_hl1 = 1000
-n_nodes_hl2 = 1000
-n_nodes_hl3 = 1000
+n_nodes_hl1 = 100
+n_nodes_hl2 = 100
+n_nodes_hl3 = 100
+n_nodes_hl4 = 100
+n_nodes_hl5 = 100
 
 n_classes = 5
-batch_size = 50
+batch_size = 60
 n_batches = int(features_train.shape[0] / batch_size)
 
 x = tf.placeholder('float', [None, 100])
@@ -48,7 +53,11 @@ def neural_network_model(data):
                       'biases': tf.Variable(tf.random_normal([n_nodes_hl2]))}
     hidden_3_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl2, n_nodes_hl3])),
                       'biases': tf.Variable(tf.random_normal([n_nodes_hl3]))}
-    output_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl2, n_classes])),
+    hidden_4_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl3, n_nodes_hl4])),
+                      'biases': tf.Variable(tf.random_normal([n_nodes_hl4]))}
+    hidden_5_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl4, n_nodes_hl5])),
+                      'biases': tf.Variable(tf.random_normal([n_nodes_hl5]))}
+    output_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl5, n_classes])),
                     'biases': tf.Variable(tf.random_normal([n_classes]))}
 
     # inputs_Data * weights + biases
@@ -59,10 +68,15 @@ def neural_network_model(data):
     l2 = tf.nn.relu(l2)
 
     l3 = tf.add(tf.matmul(l2, hidden_3_layer['weights']), hidden_3_layer['biases'])
-    l3 = tf.nn.relu(l3)
+    l3 = tf.nn.sigmoid(l3)
 
-    output = tf.matmul(l2, output_layer['weights']) + output_layer['biases']
+    l4 = tf.add(tf.matmul(l3, hidden_4_layer['weights']), hidden_4_layer['biases'])
+    l4 = tf.nn.sigmoid(l4)
 
+    l5 = tf.add(tf.matmul(l4, hidden_5_layer['weights']), hidden_5_layer['biases'])
+    l5 = tf.nn.sigmoid(l5)
+
+    output = tf.matmul(l5, output_layer['weights']) + output_layer['biases']
     return output
 
 
@@ -71,7 +85,7 @@ def train_neural_network(x):
     prediction = neural_network_model(x)
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y))
     optimizer = tf.train.AdamOptimizer().minimize(cost)
-    hm_epochs = 20
+    hm_epochs = 100
     # start session
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -81,7 +95,7 @@ def train_neural_network(x):
             epoch_loss = 0
             for _ in range(n_batches):
                 data_batch = data_train[_ * batch_size:_ * batch_size + batch_size]
-                epoch_x = np.array(data_batch[features].values).tolist()
+                epoch_x = data_batch[features]
                 epoch_x = preprocessing.scale(epoch_x)
                 epoch_y = data_batch['y']
                 epoch_y = pd.get_dummies(epoch_y)
